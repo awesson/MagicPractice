@@ -13,16 +13,11 @@ public class Magician : MonoBehaviour
 
     public void Display()
     {
+        var deck = new PlayingCardDeck();
         PlayingCard[] randomPlayingCards = new PlayingCard[CARD_COUNT];
         for (int i = 0; i < CARD_COUNT; ++i)
         {
-            var newCard = PlayingCard.GetRandomCard();
-            var setPlayingCards = new System.ArraySegment<PlayingCard>(randomPlayingCards, 0, i);
-            while (setPlayingCards.Any(pc => pc == newCard))
-            {
-                newCard = PlayingCard.GetRandomCard();
-            }
-            randomPlayingCards[i] = newCard;
+            randomPlayingCards[i] = deck.DealNextCard();
         }
 
         int first = 0;

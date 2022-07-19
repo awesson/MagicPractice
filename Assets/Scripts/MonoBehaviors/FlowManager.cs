@@ -5,13 +5,13 @@ using UnityEngine;
 public class FlowManager : MonoBehaviour
 {
     [SerializeField]
-    private GameObject MainMenu;
+    private GameObject MainMenu = default;
 
     [SerializeField]
-    private GameObject MagiciansView;
+    private GameObject MagiciansView = default;
 
     [SerializeField]
-    private GameObject AssistantsView;
+    private GameObject AssistantsView = default;
 
     private void Start()
     {
