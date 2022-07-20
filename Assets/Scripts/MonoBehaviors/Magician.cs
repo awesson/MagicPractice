@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Magician : MonoBehaviour
+public class Magician : GameView
 {
     private const int CARD_COUNT = 5;
 
@@ -14,7 +14,7 @@ public class Magician : MonoBehaviour
 
     private PlayingCardDeck m_PlayingCardDeck = new PlayingCardDeck();
 
-    public void Display()
+    public override void Display()
     {
         // Draw 5 random cards
         m_PlayingCardDeck.Reset();

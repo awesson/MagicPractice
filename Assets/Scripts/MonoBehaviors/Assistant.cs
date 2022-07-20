@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Assistant : MonoBehaviour
+public class Assistant : GameView
 {
     private const int CARD_COUNT = 5;
 
@@ -17,7 +17,7 @@ public class Assistant : MonoBehaviour
 
     private PlayingCard[] m_CorrectOrderPlayingCards = new PlayingCard[CARD_COUNT];
 
-    public void Display()
+    public override void Display()
     {
         var deck = new PlayingCardDeck();
         for (int i = 0; i < CARD_COUNT; ++i)

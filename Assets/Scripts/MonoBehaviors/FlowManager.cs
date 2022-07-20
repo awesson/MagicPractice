@@ -2,16 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public abstract class GameView : MonoBehaviour
+{
+    public abstract void Display();
+}
+
 public class FlowManager : MonoBehaviour
 {
     [SerializeField]
     private GameObject MainMenu = default;
 
-    [SerializeField]
-    private GameObject MagiciansView = default;
+    [SerializeReference]
+    private GameView MagiciansView = default;
 
-    [SerializeField]
-    private GameObject AssistantsView = default;
+    [SerializeReference]
+    private GameView AssistantsView = default;
 
     private void Start()
     {
@@ -26,21 +31,21 @@ public class FlowManager : MonoBehaviour
     public void OnPracticeMagicianClicked()
     {
         MainMenu.SetActive(false);
-        MagiciansView.SetActive(true);
-        MagiciansView.GetComponent<Magician>().Display();
+        MagiciansView.gameObject.SetActive(true);
+        MagiciansView.Display();
     }
 
     public void OnPracticeAssistantClicked()
     {
         MainMenu.SetActive(false);
-        AssistantsView.SetActive(true);
-        AssistantsView.GetComponent<Assistant>().Display();
+        AssistantsView.gameObject.SetActive(true);
+        AssistantsView.Display();
     }
 
     private void ShowMainMenu()
     {
         MainMenu.SetActive(true);
-        MagiciansView.SetActive(false);
-        AssistantsView.SetActive(false);
+        MagiciansView.gameObject.SetActive(false);
+        AssistantsView.gameObject.SetActive(false);
     }
 }
