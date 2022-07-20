@@ -33,8 +33,8 @@ public class FlowManager : MonoBehaviour
     public void OnPracticeAssistantClicked()
     {
         MainMenu.SetActive(false);
-        MagiciansView.SetActive(true);
-        MagiciansView.GetComponent<Assistant>().Display();
+        AssistantsView.SetActive(true);
+        AssistantsView.GetComponent<Assistant>().Display();
     }
 
     private void ShowMainMenu()

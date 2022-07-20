@@ -8,31 +8,35 @@ public class Assistant : MonoBehaviour
     private const int CARD_COUNT = 5;
 
     [SerializeField]
-    private PlayingCardBehavior[] m_playingCards = new PlayingCardBehavior[CARD_COUNT];
-    private PlayingCardBehavior HiddenCard { get { return m_playingCards[CARD_COUNT - 1]; } }
+    private PlayingCardBehavior[] m_PlayingCards = new PlayingCardBehavior[CARD_COUNT];
+
+    [SerializeField]
+    private PlayingCardBehavior[] m_UserOrderedCards = new PlayingCardBehavior[CARD_COUNT];
+
+    private PlayingCardBehavior HiddenCard { get { return m_PlayingCards[CARD_COUNT - 1]; } }
 
     private PlayingCard[] m_CorrectOrderPlayingCards = new PlayingCard[CARD_COUNT];
 
     public void Display()
     {
+        var deck = new PlayingCardDeck();
         for (int i = 0; i < CARD_COUNT; ++i)
         {
-            var newCard = PlayingCard.GetRandomCard();
-            var setPlayingCards = new System.ArraySegment<PlayingCardBehavior>(m_playingCards, 0, i);
-            while (setPlayingCards.Any(pc => pc.MyPlayingCard == newCard))
-            {
-                newCard = PlayingCard.GetRandomCard();
-            }
-            m_playingCards[i].SetCardTo(newCard);
+            m_PlayingCards[i].SetCardTo(deck.DealNextCard());
+        }
+
+        for (int i = 0; i < CARD_COUNT; ++i)
+        {
+            m_UserOrderedCards[i].SetCardHidden(true);
         }
     }
 
     public void OnVerifyCardOrderingClicked()
     {
-        var hiddenCardRank = m_playingCards[0].MyRank;
-        var firstOrderedCard = m_playingCards[1].MyPlayingCard;
-        var secondOrderedCard = m_playingCards[2].MyPlayingCard;
-        var thirdOrderedCard = m_playingCards[3].MyPlayingCard;
+        var hiddenCardRank = m_PlayingCards[0].MyRank;
+        var firstOrderedCard = m_PlayingCards[1].MyPlayingCard;
+        var secondOrderedCard = m_PlayingCards[2].MyPlayingCard;
+        var thirdOrderedCard = m_PlayingCards[3].MyPlayingCard;
         if (firstOrderedCard > secondOrderedCard)
         {
             hiddenCardRank += 2;
@@ -51,14 +55,14 @@ public class Assistant : MonoBehaviour
 
     private void OnValidate()
     {
-        if (m_playingCards.Length != CARD_COUNT)
+        if (m_PlayingCards.Length != CARD_COUNT)
         {
             PlayingCardBehavior[] correctSizeArray = new PlayingCardBehavior[CARD_COUNT];
-            for (int i = 0; i < CARD_COUNT && i < m_playingCards.Length; ++i)
+            for (int i = 0; i < CARD_COUNT && i < m_PlayingCards.Length; ++i)
             {
-                correctSizeArray[i] = m_playingCards[i];
+                correctSizeArray[i] = m_PlayingCards[i];
             }
-            m_playingCards = correctSizeArray;
+            m_PlayingCards = correctSizeArray;
         }
     }
 }

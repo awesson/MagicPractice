@@ -8,18 +8,23 @@ public class Magician : MonoBehaviour
     private const int CARD_COUNT = 5;
 
     [SerializeField]
-    private PlayingCardBehavior[] m_playingCards = new PlayingCardBehavior[CARD_COUNT];
-    private PlayingCardBehavior HiddenCard { get { return m_playingCards[CARD_COUNT - 1]; } }
+    private PlayingCardBehavior[] m_PlayingCards = new PlayingCardBehavior[CARD_COUNT];
+
+    private PlayingCardBehavior HiddenCard { get { return m_PlayingCards[CARD_COUNT - 1]; } }
+
+    private PlayingCardDeck m_PlayingCardDeck = new PlayingCardDeck();
 
     public void Display()
     {
-        var deck = new PlayingCardDeck();
+        // Draw 5 random cards
+        m_PlayingCardDeck.Reset();
         PlayingCard[] randomPlayingCards = new PlayingCard[CARD_COUNT];
         for (int i = 0; i < CARD_COUNT; ++i)
         {
-            randomPlayingCards[i] = deck.DealNextCard();
+            randomPlayingCards[i] = m_PlayingCardDeck.DealNextCard();
         }
 
+        // Find the first pair which share the same suit
         int first = 0;
         int hidden = 1;
         int delta = 0;
@@ -47,26 +52,28 @@ public class Magician : MonoBehaviour
                 }
             }
         }
-        m_playingCards[0].SetCardTo(randomPlayingCards[first]);
+        m_PlayingCards[0].SetCardTo(randomPlayingCards[first]);
         HiddenCard.SetCardTo(randomPlayingCards[hidden]);
 
-        // Order the other cards and check which one should go first
+        // Order the remaining cards based on if they are the highest, lowest, or middle card and which delta we are encoding.
         var orderedCards = new SortedSet<PlayingCard>(randomPlayingCards.Where((_, i) => i != first && i != hidden));
         var firstInOrder = orderedCards.GetEnumerator();
+
         // The first card encodes either 0, 2, or 4 depending on if it's low, med, or high.
         while (firstInOrder.MoveNext() && delta > 2)
         {
             delta -= 2;
         }
-        m_playingCards[1].SetCardTo(firstInOrder.Current);
+        m_PlayingCards[1].SetCardTo(firstInOrder.Current);
+
         // The last two cards either encode 1 or 2, depending on if they are sorted or reverse sorted order, respectfully.
         var remainingCards = new List<PlayingCard>(orderedCards.Where(x => x != firstInOrder.Current));
         if (delta > 1)
         {
             remainingCards.Reverse();
         }
-        m_playingCards[2].SetCardTo(remainingCards[0]);
-        m_playingCards[3].SetCardTo(remainingCards[1]);
+        m_PlayingCards[2].SetCardTo(remainingCards[0]);
+        m_PlayingCards[3].SetCardTo(remainingCards[1]);
 
         HiddenCard.SetCardHidden(true);
     }
@@ -78,14 +85,14 @@ public class Magician : MonoBehaviour
 
     private void OnValidate()
     {
-        if (m_playingCards.Length != CARD_COUNT)
+        if (m_PlayingCards.Length != CARD_COUNT)
         {
             PlayingCardBehavior[] correctSizeArray = new PlayingCardBehavior[CARD_COUNT];
-            for (int i = 0; i < CARD_COUNT && i < m_playingCards.Length; ++i)
+            for (int i = 0; i < CARD_COUNT && i < m_PlayingCards.Length; ++i)
             {
-                correctSizeArray[i] = m_playingCards[i];
+                correctSizeArray[i] = m_PlayingCards[i];
             }
-            m_playingCards = correctSizeArray;
+            m_PlayingCards = correctSizeArray;
         }
     }
 }
