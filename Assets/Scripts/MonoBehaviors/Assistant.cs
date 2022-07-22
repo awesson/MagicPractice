@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Assistant : GameView
 {
@@ -43,11 +44,13 @@ public class Assistant : GameView
     public void OnCardDragStart(DragAndDrop card)
     {
         m_DraggedCardOriginalPos = card.transform.position;
+        card.GetComponentInChildren<Image>().enabled = false;
     }
 
     public void OnCardDragEnd(DragAndDrop card)
     {
         card.transform.position = m_DraggedCardOriginalPos;
+        card.GetComponentInChildren<Image>().enabled = true;
     }
 
     public void OnCardDroppedOnto(DragAndDrop draggedObj, DragAndDrop dropTarget)
@@ -67,6 +70,31 @@ public class Assistant : GameView
             Debug.Log("consuming value of dragged card only, " + draggedCard.MyPlayingCard);
             dropTargetCard.SetCardTo(draggedCard.MyPlayingCard);
             SetCardHidden(dropTargetCard, false);
+
+            // Avoid duplicating cards in the user area
+            if (!draggedCardIsDeckCard)
+            {
+                // Dragged a face up user card onto a face down user card.
+                // Besides setting the drop target to the new value,
+                // we need to hide where it came from so we don't duplicate user cards.
+                SetCardHidden(draggedCard, true);
+            }
+            else // dragged card is a deck card
+            {
+                // If that deck card is in the user area (besides where we just set it), hide it
+                for (int i = 0; i < CARD_COUNT; ++i)
+                {
+                    if (m_UserOrderedCards[i] == dropTargetCard)
+                    {
+                        continue;
+                    }
+                    
+                    if( m_UserOrderedCards[i].MyPlayingCard == draggedCard.MyPlayingCard)
+                    {
+                        SetCardHidden(m_UserOrderedCards[i], true);
+                    }
+                }
+            }
         }
         else // dragged card is user card and the target already has a value
         {
