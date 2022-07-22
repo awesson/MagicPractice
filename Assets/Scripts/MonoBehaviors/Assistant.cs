@@ -17,26 +17,75 @@ public class Assistant : GameView
 
     private PlayingCard[] m_CorrectOrderPlayingCards = new PlayingCard[CARD_COUNT];
 
+    private Vector3 m_DraggedCardOriginalPos;
+
     public override void Display()
     {
         var deck = new PlayingCardDeck();
         for (int i = 0; i < CARD_COUNT; ++i)
         {
             m_PlayingCards[i].SetCardTo(deck.DealNextCard());
+            m_PlayingCards[i].GetComponent<DragAndDrop>().IsValidDropTarget = false;
         }
 
         for (int i = 0; i < CARD_COUNT; ++i)
         {
-            m_UserOrderedCards[i].SetCardHidden(true);
+            SetCardHidden(m_UserOrderedCards[i], true);
+        }
+    }
+
+    private void SetCardHidden(PlayingCardBehavior card, bool hide)
+    {
+        card.SetCardHidden(hide);
+        card.GetComponent<DragAndDrop>().IsValidDragTarget = !hide;
+    }
+
+    public void OnCardDragStart(DragAndDrop card)
+    {
+        m_DraggedCardOriginalPos = card.transform.position;
+    }
+
+    public void OnCardDragEnd(DragAndDrop card)
+    {
+        card.transform.position = m_DraggedCardOriginalPos;
+    }
+
+    public void OnCardDroppedOnto(DragAndDrop draggedObj, DragAndDrop dropTarget)
+    {
+        var draggedCard = draggedObj.GetComponent<PlayingCardBehavior>();
+        var dropTargetCard = dropTarget.GetComponent<PlayingCardBehavior>();
+        if (draggedCard == null || dropTargetCard == null)
+        {
+            return;
+        }
+
+        bool draggedCardIsDeckCard = m_PlayingCards.Contains(draggedCard);
+
+        if (dropTargetCard.IsHidden || draggedCardIsDeckCard)
+        {
+            dropTargetCard.SetCardTo(draggedCard.MyPlayingCard);
+            SetCardHidden(dropTargetCard, false);
+        }
+        else // dragged card is user card and the target already has a value
+        {
+            var dropTargetCardValue = dropTargetCard.MyPlayingCard;
+            dropTargetCard.SetCardTo(draggedCard.MyPlayingCard);
+            draggedCard.SetCardTo(dropTargetCardValue);
         }
     }
 
     public void OnVerifyCardOrderingClicked()
     {
-        var hiddenCardRank = m_PlayingCards[0].MyRank;
-        var firstOrderedCard = m_PlayingCards[1].MyPlayingCard;
-        var secondOrderedCard = m_PlayingCards[2].MyPlayingCard;
-        var thirdOrderedCard = m_PlayingCards[3].MyPlayingCard;
+        if (m_UserOrderedCards[0].MySuit != m_UserOrderedCards[4].MySuit)
+        {
+            Debug.Log("wrong suit!");
+            return;
+        }
+
+        var hiddenCardRank = m_UserOrderedCards[0].MyRank;
+        var firstOrderedCard = m_UserOrderedCards[1].MyPlayingCard;
+        var secondOrderedCard = m_UserOrderedCards[2].MyPlayingCard;
+        var thirdOrderedCard = m_UserOrderedCards[3].MyPlayingCard;
         if (firstOrderedCard > secondOrderedCard)
         {
             hiddenCardRank += 2;
@@ -51,6 +100,16 @@ public class Assistant : GameView
         }
         hiddenCardRank = hiddenCardRank % PlayingCard.MAX_RANK;
         ++hiddenCardRank;
+
+        if (m_UserOrderedCards[4].MyRank == hiddenCardRank)
+        {
+            Debug.Log("CORRECT!");
+        }
+        else
+        {
+            Debug.Log("Wrong rank! Currently encoded for the last card to be rank " + hiddenCardRank);
+        }
+
     }
 
     private void OnValidate()
