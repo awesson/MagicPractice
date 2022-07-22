@@ -14,6 +14,9 @@ public class Assistant : GameView
     [SerializeField]
     private PlayingCardBehavior[] m_UserOrderedCards = new PlayingCardBehavior[CARD_COUNT];
 
+    [SerializeField]
+    private Text m_MessageText = default;
+
     private PlayingCardBehavior HiddenCard { get { return m_PlayingCards[CARD_COUNT - 1]; } }
 
     private PlayingCard[] m_CorrectOrderPlayingCards = new PlayingCard[CARD_COUNT];
@@ -33,6 +36,11 @@ public class Assistant : GameView
         for (int i = 0; i < CARD_COUNT; ++i)
         {
             SetCardHidden(m_UserOrderedCards[i], true);
+        }
+
+        if (m_MessageText)
+        {
+            m_MessageText.text = "Order the cards, then press Verify";
         }
     }
 
@@ -130,9 +138,20 @@ public class Assistant : GameView
 
     public void OnVerifyCardOrderingClicked()
     {
+        if (!m_MessageText)
+        {
+            return;
+        }
+
+        if (m_UserOrderedCards.Any(card => card.IsHidden))
+        {
+            m_MessageText.text = "Place all the cards first!";
+            return;
+        }
+
         if (m_UserOrderedCards[0].MySuit != m_UserOrderedCards[4].MySuit)
         {
-            Debug.Log("wrong suit!");
+            m_MessageText.text = "wrong suit!";
             return;
         }
 
@@ -157,11 +176,11 @@ public class Assistant : GameView
 
         if (m_UserOrderedCards[4].MyRank == hiddenCardRank)
         {
-            Debug.Log("CORRECT!");
+            m_MessageText.text = "CORRECT!";
         }
         else
         {
-            Debug.Log("Wrong rank! Currently encoded for the last card to be rank " + hiddenCardRank);
+            m_MessageText.text = "Wrong rank! Currently encoded for the last card to be rank " + hiddenCardRank;
         }
 
     }
