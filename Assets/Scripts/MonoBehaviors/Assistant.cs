@@ -26,6 +26,7 @@ public class Assistant : GameView
         for (int i = 0; i < CARD_COUNT; ++i)
         {
             m_PlayingCards[i].SetCardTo(deck.DealNextCard());
+            m_PlayingCards[i].SetCardAsUsed(false);
             m_PlayingCards[i].GetComponent<DragAndDrop>().IsValidDropTarget = false;
         }
 
@@ -102,6 +103,28 @@ public class Assistant : GameView
             var dropTargetCardValue = dropTargetCard.MyPlayingCard;
             dropTargetCard.SetCardTo(draggedCard.MyPlayingCard);
             draggedCard.SetCardTo(dropTargetCardValue);
+        }
+
+        UpdatePlacedCardsUsedState();
+    }
+
+    private void UpdatePlacedCardsUsedState()
+    {
+        for (int i = 0; i < CARD_COUNT; ++i)
+        {
+            var deckCard = m_PlayingCards[i];
+            bool isUsed = false;
+            for (int k = 0; k < CARD_COUNT; ++k)
+            {
+                var userCard = m_UserOrderedCards[k];
+                if (deckCard.MyPlayingCard == userCard.MyPlayingCard)
+                {
+                    isUsed = true;
+                    break;
+                }
+            }
+
+            deckCard.SetCardAsUsed(isUsed);
         }
     }
 
