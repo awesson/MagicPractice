@@ -16,35 +16,69 @@ public class DragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     [SerializeField]
     private UnityEvent<DragAndDrop, DragAndDrop> m_OnDroppedOnto = default;
 
+    private bool m_Dragging = false;
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        if (!IsValidDragTarget)
+        {
+            return;
+        }
+
+        m_Dragging = true;
+        m_OnDragStarted?.Invoke(this);
+    }
+
     public void OnDrag(PointerEventData eventData)
     {
+        if (!IsValidDragTarget)
+        {
+            // Make sure to send the end event if we sent the start event,
+            // even if it's not valid to drag anymore
+            if (m_Dragging)
+            {
+                OnEndDrag(eventData);
+            }
+            return;
+        }
+
         if (eventData.dragging)
         {
+            // Make sure to send the start event if we were disabled at the time of the real start
+            if (!m_Dragging)
+            {
+                OnBeginDrag(eventData);
+            }
+
             transform.position += (Vector3)eventData.delta;
         }
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        var overList = eventData.hovered;
-        for (int i = 0; i < overList.Count; ++i)
+        if (IsValidDragTarget)
         {
-            var posibleDropTarget = overList[i].GetComponent<DragAndDrop>();
-            if (posibleDropTarget != null
-                && posibleDropTarget != this
-                && posibleDropTarget.IsValidDropTarget)
+            var overList = eventData.hovered;
+            for (int i = 0; i < overList.Count; ++i)
             {
-                // TODO: Handle if we are over more than one drop target?
-                posibleDropTarget.m_OnDroppedOnto?.Invoke(this, posibleDropTarget);
-                break;
+                var posibleDropTarget = overList[i].GetComponent<DragAndDrop>();
+                if (posibleDropTarget != null
+                    && posibleDropTarget != this
+                    && posibleDropTarget.IsValidDropTarget)
+                {
+                    // TODO: Handle if we are over more than one drop target?
+                    posibleDropTarget.m_OnDroppedOnto?.Invoke(this, posibleDropTarget);
+                    break;
+                }
             }
         }
 
-        m_OnDragEnded?.Invoke(this);
-    }
-
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        m_OnDragStarted?.Invoke(this);
+        // Make sure to send the end event if we sent a start event,
+        // even if it's not valid to drag anymore
+        if (m_Dragging)
+        {
+            m_OnDragEnded?.Invoke(this);
+            m_Dragging = false;
+        }
     }
 }

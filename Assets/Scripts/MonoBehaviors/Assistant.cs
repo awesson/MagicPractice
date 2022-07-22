@@ -56,6 +56,7 @@ public class Assistant : GameView
         var dropTargetCard = dropTarget.GetComponent<PlayingCardBehavior>();
         if (draggedCard == null || dropTargetCard == null)
         {
+            Debug.Log("dropped onto something, but it's not a card....");
             return;
         }
 
@@ -63,11 +64,13 @@ public class Assistant : GameView
 
         if (dropTargetCard.IsHidden || draggedCardIsDeckCard)
         {
+            Debug.Log("consuming value of dragged card only, " + draggedCard.MyPlayingCard);
             dropTargetCard.SetCardTo(draggedCard.MyPlayingCard);
             SetCardHidden(dropTargetCard, false);
         }
         else // dragged card is user card and the target already has a value
         {
+            Debug.Log("Swapping values of the cards, ");
             var dropTargetCardValue = dropTargetCard.MyPlayingCard;
             dropTargetCard.SetCardTo(draggedCard.MyPlayingCard);
             draggedCard.SetCardTo(dropTargetCardValue);
