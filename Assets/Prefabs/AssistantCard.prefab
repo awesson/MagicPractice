@@ -165,7 +165,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c63c249b86484104195e66e53a34bc2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_IsValidDropTarget: 1
   m_OnDragStarted:
     m_PersistentCalls:
       m_Calls:
