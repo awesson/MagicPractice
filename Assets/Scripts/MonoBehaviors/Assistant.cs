@@ -125,7 +125,7 @@ public class Assistant : GameView
             for (int k = 0; k < CARD_COUNT; ++k)
             {
                 var userCard = m_UserOrderedCards[k];
-                if (deckCard.MyPlayingCard == userCard.MyPlayingCard)
+                if (!userCard.IsHidden && deckCard.MyPlayingCard == userCard.MyPlayingCard)
                 {
                     isUsed = true;
                     break;
