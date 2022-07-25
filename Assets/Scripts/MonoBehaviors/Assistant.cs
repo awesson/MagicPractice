@@ -17,7 +17,11 @@ public class Assistant : GameView
     [SerializeField]
     private Text m_MessageText = default;
 
-    private PlayingCardBehavior HiddenCard { get { return m_PlayingCards[CARD_COUNT - 1]; } }
+    private PlayingCardBehavior FirstEncodedCard { get { return m_UserOrderedCards[0]; } }
+    private PlayingCardBehavior SecondEncodedCard { get { return m_UserOrderedCards[1]; } }
+    private PlayingCardBehavior ThirdEncodedCard { get { return m_UserOrderedCards[2]; } }
+    private PlayingCardBehavior ShownSuitCard { get { return m_UserOrderedCards[CARD_COUNT - 2]; } }
+    private PlayingCardBehavior HiddenCard { get { return m_UserOrderedCards[CARD_COUNT - 1]; } }
 
     private PlayingCard[] m_CorrectOrderPlayingCards = new PlayingCard[CARD_COUNT];
 
@@ -149,16 +153,16 @@ public class Assistant : GameView
             return;
         }
 
-        if (m_UserOrderedCards[0].MySuit != m_UserOrderedCards[4].MySuit)
+        if (ShownSuitCard.MySuit != HiddenCard.MySuit)
         {
             m_MessageText.text = "wrong suit!";
             return;
         }
 
-        var hiddenCardRank = m_UserOrderedCards[0].MyRank;
-        var firstOrderedCard = m_UserOrderedCards[1].MyPlayingCard;
-        var secondOrderedCard = m_UserOrderedCards[2].MyPlayingCard;
-        var thirdOrderedCard = m_UserOrderedCards[3].MyPlayingCard;
+        var hiddenCardRank = ShownSuitCard.MyRank;
+        var firstOrderedCard = FirstEncodedCard.MyPlayingCard;
+        var secondOrderedCard = SecondEncodedCard.MyPlayingCard;
+        var thirdOrderedCard = ThirdEncodedCard.MyPlayingCard;
         if (firstOrderedCard > secondOrderedCard)
         {
             hiddenCardRank += 2;
@@ -174,13 +178,13 @@ public class Assistant : GameView
         hiddenCardRank = hiddenCardRank % PlayingCard.MAX_RANK;
         ++hiddenCardRank;
 
-        if (m_UserOrderedCards[4].MyRank == hiddenCardRank)
+        if (HiddenCard.MyRank == hiddenCardRank)
         {
             m_MessageText.text = "CORRECT!";
         }
         else
         {
-            m_MessageText.text = "Wrong rank! Currently encoded for the last card to be rank " + hiddenCardRank;
+            m_MessageText.text = "Wrong rank! Currently encoded for the hidden card to be rank " + hiddenCardRank;
         }
 
     }

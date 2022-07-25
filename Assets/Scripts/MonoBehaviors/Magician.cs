@@ -10,6 +10,10 @@ public class Magician : GameView
     [SerializeField]
     private PlayingCardBehavior[] m_PlayingCards = new PlayingCardBehavior[CARD_COUNT];
 
+    private PlayingCardBehavior FirstEncodedCard { get { return m_PlayingCards[0]; } }
+    private PlayingCardBehavior SecondEncodedCard { get { return m_PlayingCards[1]; } }
+    private PlayingCardBehavior ThirdEncodedCard { get { return m_PlayingCards[2]; } }
+    private PlayingCardBehavior PivotCard { get { return m_PlayingCards[CARD_COUNT - 2]; } }
     private PlayingCardBehavior HiddenCard { get { return m_PlayingCards[CARD_COUNT - 1]; } }
 
     private PlayingCardDeck m_PlayingCardDeck = new PlayingCardDeck();
@@ -52,7 +56,7 @@ public class Magician : GameView
                 }
             }
         }
-        m_PlayingCards[0].SetCardTo(randomPlayingCards[first]);
+        PivotCard.SetCardTo(randomPlayingCards[first]);
         HiddenCard.SetCardTo(randomPlayingCards[hidden]);
 
         // Order the remaining cards based on if they are the highest, lowest, or middle card and which delta we are encoding.
@@ -64,7 +68,7 @@ public class Magician : GameView
         {
             delta -= 2;
         }
-        m_PlayingCards[1].SetCardTo(firstInOrder.Current);
+        FirstEncodedCard.SetCardTo(firstInOrder.Current);
 
         // The last two cards either encode 1 or 2, depending on if they are sorted or reverse sorted order, respectfully.
         var remainingCards = new List<PlayingCard>(orderedCards.Where(x => x != firstInOrder.Current));
@@ -72,8 +76,8 @@ public class Magician : GameView
         {
             remainingCards.Reverse();
         }
-        m_PlayingCards[2].SetCardTo(remainingCards[0]);
-        m_PlayingCards[3].SetCardTo(remainingCards[1]);
+        SecondEncodedCard.SetCardTo(remainingCards[0]);
+        ThirdEncodedCard.SetCardTo(remainingCards[1]);
 
         HiddenCard.SetCardHidden(true);
     }
