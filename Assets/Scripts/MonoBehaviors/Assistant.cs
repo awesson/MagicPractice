@@ -17,6 +17,9 @@ public class Assistant : GameView
     [SerializeField]
     private Text m_MessageText = default;
 
+    [SerializeField]
+    private TextTimer m_TimerText = default;
+
     private PlayingCardBehavior FirstEncodedCard { get { return m_UserOrderedCards[0]; } }
     private PlayingCardBehavior SecondEncodedCard { get { return m_UserOrderedCards[1]; } }
     private PlayingCardBehavior ThirdEncodedCard { get { return m_UserOrderedCards[2]; } }
@@ -26,6 +29,12 @@ public class Assistant : GameView
     private PlayingCard[] m_CorrectOrderPlayingCards = new PlayingCard[CARD_COUNT];
 
     private Vector3 m_DraggedCardOriginalPos;
+
+    private void Start()
+    {
+        // Start with timer hidden
+        ToggleTimerVisibility();
+    }
 
     public override void Display()
     {
@@ -42,10 +51,13 @@ public class Assistant : GameView
             SetCardHidden(m_UserOrderedCards[i], true);
         }
 
-        if (m_MessageText)
+        if (m_MessageText != null)
         {
             m_MessageText.text = "Order the cards, then press Verify";
         }
+
+        m_TimerText?.ResetStopwatch();
+        m_TimerText?.StartStopwatch();
     }
 
     private void SetCardHidden(PlayingCardBehavior card, bool hide)
@@ -181,12 +193,17 @@ public class Assistant : GameView
         if (HiddenCard.MyRank == hiddenCardRank)
         {
             m_MessageText.text = "CORRECT!";
+            m_TimerText?.StopStopwatch();
         }
         else
         {
             m_MessageText.text = "Wrong rank! Currently encoded for the hidden card to be rank " + hiddenCardRank;
         }
+    }
 
+    public void ToggleTimerVisibility()
+    {
+        m_TimerText?.ToggleVisibility();
     }
 
     private void OnValidate()

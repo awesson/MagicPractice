@@ -10,6 +10,9 @@ public class Magician : GameView
     [SerializeField]
     private PlayingCardBehavior[] m_PlayingCards = new PlayingCardBehavior[CARD_COUNT];
 
+    [SerializeField]
+    private TextTimer m_TimerText = default;
+
     private PlayingCardBehavior FirstEncodedCard { get { return m_PlayingCards[0]; } }
     private PlayingCardBehavior SecondEncodedCard { get { return m_PlayingCards[1]; } }
     private PlayingCardBehavior ThirdEncodedCard { get { return m_PlayingCards[2]; } }
@@ -17,6 +20,12 @@ public class Magician : GameView
     private PlayingCardBehavior HiddenCard { get { return m_PlayingCards[CARD_COUNT - 1]; } }
 
     private PlayingCardDeck m_PlayingCardDeck = new PlayingCardDeck();
+
+    private void Start()
+    {
+        // Start with timer hidden
+        ToggleTimerVisibility();
+    }
 
     public override void Display()
     {
@@ -80,11 +89,20 @@ public class Magician : GameView
         ThirdEncodedCard.SetCardTo(remainingCards[1]);
 
         HiddenCard.SetCardHidden(true);
+
+        m_TimerText?.ResetStopwatch();
+        m_TimerText?.StartStopwatch();
     }
 
     public void ShowHiddenCard()
     {
         HiddenCard.SetCardHidden(false);
+        m_TimerText?.StopStopwatch();
+    }
+
+    public void ToggleTimerVisibility()
+    {
+        m_TimerText?.ToggleVisibility();
     }
 
     private void OnValidate()
